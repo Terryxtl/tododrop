@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">待办投递</string>
+    <string name="inbox_name">收件箱</string>
+
+    <!-- 通用 -->
+    <string name="cancel">取消</string>
+    <string name="confirm">确定</string>
+    <string name="save">保存</string>
+    <string name="delete">删除</string>
+    <string name="rename">重命名</string>
+    <string name="back">返回</string>
+    <string name="more">更多</string>
+    <string name="close">关闭</string>
+    <string name="undo">撤销</string>
+    <string name="retry">重试</string>
+    <string name="drag_handle">拖动排序</string>
+
+    <!-- 首页 -->
+    <string name="projects_subtitle">%1$d 个项目 · %2$d 项未完成</string>
+    <string name="projects_empty_title">还没有项目</string>
+    <string name="projects_empty_body">新建一个项目，开始记录待办</string>
+    <string name="project_new">新建项目</string>
+    <string name="project_rename">重命名项目</string>
+    <string name="project_name_hint">项目名称</string>
+    <string name="project_open_count">%1$d 项未完成</string>
+    <string name="project_all_done">全部完成</string>
+    <string name="project_empty">还没有待办</string>
+    <string name="project_expand">展开</string>
+    <string name="project_collapse">收起</string>
+    <string name="project_swipe_export">扫码导出 %1$d 项</string>
+    <string name="project_delete_title">删除项目？</string>
+    <string name="project_delete_body">「%1$s」和其中的 %2$d 条待办会被永久删除，无法撤销。</string>
+    <string name="project_delete_body_children">「%1$s」、它的 %2$d 个子项目和其中的 %3$d 条待办会被永久删除，无法撤销。</string>
+    <string name="project_new_child">在「%1$s」下新建子项目</string>
+    <string name="project_add_child">添加子项目</string>
+    <string name="project_children_suffix">%1$s · %2$d 个子项目</string>
+    <string name="menu_history">导出历史</string>
+    <string name="menu_backup">备份与恢复</string>
+    <string name="action_export">导出</string>
+
+    <!-- 项目详情 -->
+    <string name="detail_export">导出此项目</string>
+    <string name="detail_open_empty">没有未完成的待办</string>
+    <string name="detail_open_empty_body">在下方输入框里添加一条吧</string>
+    <string name="detail_add_hint">添加待办…</string>
+    <string name="detail_add_note_hint">添加提醒…</string>
+    <string name="add_kind_todo">待办</string>
+    <string name="add_kind_note">提醒</string>
+    <string name="note_label">提醒</string>
+    <string name="note_explain">提醒没有完成状态，导出时不写进 Markdown，发送后会显示在电脑终端和手机上。</string>
+    <string name="detail_add">添加</string>
+    <string name="detail_completed">已完成 (%1$d)</string>
+    <string name="todo_completed">已完成一条待办</string>
+    <string name="todo_deleted">已删除一条待办</string>
+    <string name="todo_reopened">已恢复为未完成</string>
+    <string name="todo_moved">已移到「%1$s」</string>
+    <string name="todo_edit_title">编辑待办</string>
+    <string name="todo_content_hint">待办内容</string>
+    <string name="todo_project">所属项目</string>
+    <string name="todo_swipe_done">完成</string>
+    <string name="todo_swipe_reopen">恢复</string>
+
+    <!-- 导出选择 -->
+    <string name="export_title">选择要导出的待办</string>
+    <string name="export_select_all">全选</string>
+    <string name="export_select_none">全不选</string>
+    <string name="export_selected">已选 %1$d 条</string>
+    <string name="export_preview">预览</string>
+    <string name="export_scan">扫码发送</string>
+    <string name="export_empty_title">没有可导出的待办</string>
+    <string name="export_empty_body">所有待办都已完成</string>
+    <string name="export_preview_title">导出预览</string>
+    <string name="export_preview_body">电脑上会生成 %1$d 个文件，共 %2$d 条待办。提醒不写进文件，发送后会显示在电脑终端和手机上。</string>
+    <string name="export_file_count">%1$d 条</string>
+    <string name="notes_title">提醒 %1$d 条（不写入文件）</string>
+    <string name="export_group_count">%1$d/%2$d</string>
+
+    <!-- 扫码 -->
+    <string name="scan_title">扫描二维码</string>
+    <string name="scan_hint">在电脑上运行 tododrop，对准终端里的二维码</string>
+    <string name="scan_not_tododrop">这不是「待办投递」的二维码</string>
+    <string name="scan_unsupported">二维码版本不受支持，请把 App 和电脑端升级到同一版本</string>
+    <string name="scan_invalid">二维码内容不完整：%1$s</string>
+    <string name="scan_torch">手电筒</string>
+    <string name="scan_permission_title">需要相机权限</string>
+    <string name="scan_permission_body">扫描电脑终端上的二维码需要使用相机，图像只在本机识别，不会上传。</string>
+    <string name="scan_permission_grant">授予权限</string>
+    <string name="scan_permission_settings">去设置开启</string>
+    <string name="scan_paste">手动粘贴链接</string>
+    <string name="scan_paste_ok">连接</string>
+
+    <!-- 发送 -->
+    <string name="send_title">发送待办</string>
+    <string name="send_connecting">正在连接 %1$s…</string>
+    <string name="send_connecting_unknown">正在连接电脑…</string>
+    <string name="send_uploading">正在发送 %1$d 条待办…</string>
+    <string name="send_success">已发送到 %1$s</string>
+    <string name="send_success_count">共 %1$d 条待办，已标为完成，在电脑上保存为 %2$d 个文件</string>
+    <string name="send_done">完成</string>
+    <string name="send_rescan">重新扫码</string>
+    <string name="send_err_unreachable_title">连接不上电脑</string>
+    <string name="send_err_unreachable_body">请确认：\n• 手机和电脑连着同一个局域网（同一个 Wi-Fi）\n• 电脑上的 tododrop 仍在运行\n• Windows 防火墙已允许 tododrop 访问“专用网络”</string>
+    <string name="send_err_fingerprint_title">证书指纹不匹配</string>
+    <string name="send_err_fingerprint_body">连接到的设备不是二维码对应的那台电脑，或者 tododrop 已经重启。请重新扫码。</string>
+    <string name="send_err_unauthorized_title">二维码已失效</string>
+    <string name="send_err_unauthorized_body">tododrop 可能已经重启，请扫描终端里最新的二维码。</string>
+    <string name="send_err_rejected_title">电脑端没有保存</string>
+    <string name="send_err_failed_title">发送失败</string>
+    <string name="send_err_nothing_title">没有可发送的待办</string>
+    <string name="send_err_nothing_body">选中的待办可能已被完成或删除，请返回重新选择。</string>
+    <string name="send_err_invalid_title">二维码无效</string>
+
+    <!-- 导出历史 -->
+    <string name="history_title">导出历史</string>
+    <string name="history_empty_title">还没有导出记录</string>
+    <string name="history_empty_body">每次发送成功后都会记录在这里</string>
+    <string name="history_clear">清空</string>
+    <string name="history_clear_title">清空导出历史？</string>
+    <string name="history_clear_body">只删除记录，不影响待办和电脑上已保存的文件。</string>
+    <string name="history_item_summary">%1$s · %2$d 条待办 · %3$d 个文件</string>
+    <string name="history_delete">删除这条记录</string>
+
+    <!-- 界面补充 -->
+    <string name="scan_paste_placeholder" translatable="false">tododrop://v1?…</string>
+
+    <!-- 备份与恢复 -->
+    <string name="backup_title">备份与恢复</string>
+    <string name="backup_export_title">备份到文件</string>
+    <string name="backup_export_body">把所有项目、待办和导出历史保存为一个 JSON 文件，可以存到网盘或电脑上。</string>
+    <string name="backup_export_action">选择保存位置</string>
+    <string name="backup_import_title">从备份恢复</string>
+    <string name="backup_import_body">用备份文件覆盖当前的所有数据，适合换机或重装后使用。</string>
+    <string name="backup_import_action">选择备份文件</string>
+    <string name="backup_done">已备份 %1$d 个项目、%2$d 条待办</string>
+    <string name="backup_restore_confirm_title">覆盖当前数据？</string>
+    <string name="backup_restore_confirm_body">将用备份（%1$d 个项目、%2$d 条待办、%3$d 条导出记录）覆盖当前所有数据，此操作无法撤销。</string>
+    <string name="backup_restore_action">覆盖恢复</string>
+    <string name="backup_restored">已恢复 %1$d 个项目、%2$d 条待办</string>
+    <string name="backup_error">操作失败：%1$s</string>
+
+    <!-- 传输 / 备份错误 -->
+    <string name="qr_invalid_format">链接格式错误</string>
+    <string name="qr_invalid_hosts_missing">缺少地址</string>
+    <string name="qr_invalid_hosts_too_many">地址过多</string>
+    <string name="qr_invalid_host">地址无效</string>
+    <string name="qr_invalid_port">端口无效</string>
+    <string name="qr_invalid_token">token 无效</string>
+    <string name="qr_invalid_fingerprint">证书指纹无效</string>
+    <string name="send_err_not_tododrop_title">对方不是 tododrop</string>
+    <string name="send_err_not_tododrop_body">连上的地址上运行的不是 tododrop 电脑端。请确认扫描的是 tododrop 终端里显示的二维码。</string>
+    <string name="send_err_protocol_title">版本不兼容</string>
+    <string name="send_err_protocol_body">电脑端的协议版本是 %1$d，App 使用的是 %2$d。请把 App 和电脑端升级到同一版本。</string>
+    <string name="send_err_timeout_title">电脑端没有及时回应</string>
+    <string name="send_err_timeout_body">待办已经发出，但没有等到电脑的确认。电脑可能已经保存了文件，请先查看电脑上的保存目录，确认没有再重试，以免重复。</string>
+    <string name="send_err_interrupted_title">发送时连接中断</string>
+    <string name="send_err_interrupted_body">发送过程中连接断开了。电脑可能已经保存了文件，请先查看电脑上的保存目录，确认没有再重试，以免重复。</string>
+    <string name="send_err_rejected_detail">%1$s（HTTP %2$d）</string>
+    <string name="send_err_rejected_400">电脑端认为请求内容无效（HTTP 400），请把 App 和电脑端升级到同一版本。</string>
+    <string name="send_err_rejected_413">待办内容超过了电脑端 2 MiB 的上限（HTTP 413），请少选一些分几次发送。</string>
+    <string name="send_err_rejected_http">电脑端返回了错误（HTTP %1$d）。</string>
+    <string name="send_err_bad_response_body">电脑端返回了无法识别的内容。电脑可能已经保存了文件，请先查看保存目录；如果反复出现，请把 App 和电脑端升级到同一版本。</string>
+    <string name="send_err_failed_body">发生了意外错误，请重试。</string>
+    <string name="backup_err_cannot_open">无法打开所选文件</string>
+    <string name="backup_err_read">读取文件失败</string>
+    <string name="backup_err_write">写入文件失败</string>
+    <string name="backup_err_too_large">文件过大（超过 %1$d MiB）</string>
+    <string name="backup_err_malformed">不是有效的备份文件（JSON 格式错误或缺少字段）</string>
+    <string name="backup_err_wrong_format">文件类型不是 tododrop-backup</string>
+    <string name="backup_err_version">不支持的备份版本 %1$d</string>
+    <string name="backup_err_duplicate_project">备份中的项目 id 重复</string>
+    <string name="backup_err_invalid_project">备份中存在无效的项目</string>
+    <string name="backup_err_duplicate_todo">备份中的待办 id 重复</string>
+    <string name="backup_err_invalid_todo">备份中存在无效的待办</string>
+    <string name="backup_err_orphan_todo">待办 %1$d 找不到所属项目 %2$d</string>
+    <string name="backup_err_duplicate_history">备份中的导出记录 id 重复</string>
+    <string name="backup_err_hierarchy">项目 %1$d 的上级项目不存在、互相嵌套成环，或者层级超过 3 层</string>
+    <string name="backup_err_restore">写入数据失败，当前数据没有改动</string>
+    <string name="backup_err_unknown">发生了意外错误</string>
+</resources>

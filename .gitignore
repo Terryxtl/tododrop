@@ -1,0 +1,22 @@
+# Rust
+cli/target/
+
+# Android / Gradle
+android/.gradle/
+android/.kotlin/
+android/build/
+android/app/build/
+android/local.properties
+android/.idea/
+android/captures/
+*.iml
+*.apk
+*.aab
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/
+
+# 手机发来的待办导出
+TODOS_*.md
