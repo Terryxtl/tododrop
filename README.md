@@ -33,6 +33,18 @@ TODO/
         └── ui/          Compose 界面
 ```
 
+## 下载
+
+到 [Releases](https://github.com/Terryxtl/tododrop/releases) 下载编译好的文件：
+
+| 文件 | 说明 |
+|---|---|
+| `TodoDrop-vX.Y.Z-arm64.apk` | Android App（arm64-v8a，Android 9+） |
+| `tododrop-vX.Y.Z-windows-x64.zip` | Windows CLI |
+| `tododrop-vX.Y.Z-linux-x64.tar.gz` / `linux-arm64` | Linux CLI（musl 静态链接，不依赖 glibc 版本） |
+| `tododrop-vX.Y.Z-macos-arm64.tar.gz` / `macos-x64` | macOS CLI（未签名，首次运行需在「隐私与安全性」里允许，或执行 `xattr -d com.apple.quarantine tododrop`） |
+| `SHA256SUMS.txt` | 校验和 |
+
 ## PC 端 CLI
 
 ### 编译
@@ -143,7 +155,7 @@ default_dir = 'D:\Notes'
 ### 编译与安装
 
 - 只打包 `arm64-v8a`，最低支持 Android 9（minSdk 28），targetSdk 36
-- release 包用 debug 签名并开启 R8 混淆，方便直接安装
+- release 包开启 R8 混淆；本地编译默认用 debug 签名，方便直接安装（设置了 `TODODROP_KEYSTORE` 等环境变量时改用正式签名，见下方「发布」）
 
 ```bash
 cd android
@@ -193,6 +205,38 @@ Windows 的 cmd / PowerShell 里用 `gradlew.bat :app:assembleRelease`。
 
 - [ ] 加索引
 ```
+
+## 发布
+
+GitHub Actions 配置在 `.github/workflows/`：
+
+- `ci.yml`：推送到 `main` 或提 PR 时，在 Linux / Windows / macOS 上跑 `cargo test`，并跑 Android 单元测试、编译 debug APK。
+- `release.yml`：推送 `v*` 标签时编译 5 个平台的 CLI 和 release APK，生成 `SHA256SUMS.txt`，发布到 Releases。带 `-` 的标签（如 `v0.3.0-beta.1`）发布为预发布版本。
+
+发新版本：
+
+1. 同时修改 `cli/Cargo.toml` 的 `version` 和 `android/app/build.gradle.kts` 的 `versionName`（以及递增 `versionCode`），在 `cli/` 下跑一次 `cargo build` 更新 `Cargo.lock`。
+2. 提交后打标签并推送：
+
+   ```bash
+   git tag v0.3.0
+   git push origin main v0.3.0
+   ```
+
+标签和两处版本号不一致时，工作流会直接失败。
+
+### APK 签名
+
+在仓库 Settings → Secrets and variables → Actions 里配置以下 4 个 Secret，CI 就会用正式证书签名 APK：
+
+| Secret | 内容 |
+|---|---|
+| `ANDROID_KEYSTORE_BASE64` | keystore 文件的 base64（`base64 -w0 release.keystore`） |
+| `ANDROID_KEYSTORE_PASSWORD` | keystore 密码 |
+| `ANDROID_KEY_ALIAS` | 密钥别名 |
+| `ANDROID_KEY_PASSWORD` | 密钥密码 |
+
+没配置时 APK 用 CI 临时生成的 debug 证书签名，每次构建的证书都不同，新版本不能覆盖安装旧版本。
 
 ## 传输协议
 

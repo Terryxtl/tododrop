@@ -1,0 +1,53 @@
+# 推送到 main 或提 PR 时跑测试，确保随时可以打标签发布。
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ["**.md", "docs/**"]
+  pull_request:
+    paths-ignore: ["**.md", "docs/**"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  cli:
+    name: CLI 测试 (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: cli
+      - name: cargo test
+        working-directory: cli
+        run: cargo test --locked
+
+  android:
+    name: Android 单元测试与编译
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+      - name: Gradle 改用官方下载地址
+        run: sed -i 's|mirrors.aliyun.com/gradle/distributions/v[^/]*/|services.gradle.org/distributions/|' android/gradle/wrapper/gradle-wrapper.properties
+      - name: 单元测试并编译 debug APK
+        working-directory: android
+        run: ./gradlew --no-daemon :app:testDebugUnitTest :app:assembleDebug

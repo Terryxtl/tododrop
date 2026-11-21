@@ -1,0 +1,171 @@
+# 推送 v* 标签时自动构建 PC CLI（多平台）和 Android APK，并发布到 GitHub Releases。
+#
+#   git tag v0.2.0 && git push origin v0.2.0
+#
+# 标签版本必须和 cli/Cargo.toml 的 version、android/app/build.gradle.kts 的 versionName 一致。
+# 带 "-" 的标签（如 v0.3.0-beta.1）发布为预发布版本。
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check-version:
+    name: 校验版本号
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: 标签与 Cargo.toml / versionName 一致
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          version="${TAG#v}"
+          cargo_version=$(grep -m1 '^version' cli/Cargo.toml | cut -d'"' -f2)
+          app_version=$(grep -m1 'versionName' android/app/build.gradle.kts | cut -d'"' -f2)
+          echo "tag=$version cargo=$cargo_version android=$app_version"
+          if [ "$version" != "$cargo_version" ] || [ "$version" != "$app_version" ]; then
+            echo "::error::标签 $TAG 与 Cargo.toml ($cargo_version) 或 versionName ($app_version) 不一致"
+            exit 1
+          fi
+
+  cli:
+    name: CLI ${{ matrix.name }}
+    needs: check-version
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: windows-x64, os: windows-latest, target: x86_64-pc-windows-msvc }
+          - { name: linux-x64, os: ubuntu-latest, target: x86_64-unknown-linux-musl }
+          - { name: linux-arm64, os: ubuntu-24.04-arm, target: aarch64-unknown-linux-musl }
+          - { name: macos-arm64, os: macos-latest, target: aarch64-apple-darwin }
+          - { name: macos-x64, os: macos-latest, target: x86_64-apple-darwin }
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: 安装 musl 工具链
+        if: contains(matrix.target, 'musl')
+        run: sudo apt-get update && sudo apt-get install -y musl-tools
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: cli
+          key: ${{ matrix.target }}
+
+      - name: 编译
+        working-directory: cli
+        run: cargo build --release --locked --target ${{ matrix.target }}
+
+      - name: 打包
+        shell: bash
+        env:
+          TAG: ${{ github.ref_name }}
+          TARGET: ${{ matrix.target }}
+          NAME: ${{ matrix.name }}
+        run: |
+          mkdir -p dist
+          pkg="tododrop-${TAG}-${NAME}"
+          bindir="cli/target/${TARGET}/release"
+          if [[ "$TARGET" == *windows* ]]; then
+            (cd "$bindir" && 7z a "$GITHUB_WORKSPACE/dist/${pkg}.zip" tododrop.exe)
+          else
+            tar -C "$bindir" -czf "dist/${pkg}.tar.gz" tododrop
+          fi
+          ls -l dist
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: cli-${{ matrix.name }}
+          path: dist/*
+          if-no-files-found: error
+
+  android:
+    name: Android APK
+    needs: check-version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+
+      - name: Gradle 改用官方下载地址
+        run: sed -i 's|mirrors.aliyun.com/gradle/distributions/v[^/]*/|services.gradle.org/distributions/|' android/gradle/wrapper/gradle-wrapper.properties
+
+      - name: 还原签名证书
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.keystore"
+            echo "TODODROP_KEYSTORE=$RUNNER_TEMP/release.keystore" >> "$GITHUB_ENV"
+          else
+            echo "::warning::没有配置 ANDROID_KEYSTORE_BASE64，APK 用 CI 临时生成的 debug 证书签名，不能覆盖安装其他证书签名的版本"
+          fi
+
+      - name: 编译 release APK
+        working-directory: android
+        env:
+          TODODROP_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          TODODROP_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          TODODROP_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: ./gradlew --no-daemon :app:assembleRelease
+
+      - name: 重命名
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          mkdir -p dist
+          cp android/app/build/outputs/apk/release/app-release.apk "dist/TodoDrop-${TAG}-arm64.apk"
+          ls -l dist
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: android-apk
+          path: dist/*
+          if-no-files-found: error
+
+  release:
+    name: 发布
+    needs: [cli, android]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: 生成校验和
+        working-directory: dist
+        run: |
+          sha256sum * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+      - uses: softprops/action-gh-release@v3
+        with:
+          name: TodoDrop ${{ github.ref_name }}
+          files: dist/*
+          generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          fail_on_unmatched_files: true

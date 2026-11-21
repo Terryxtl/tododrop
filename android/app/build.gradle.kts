@@ -23,11 +23,28 @@ android {
         }
     }
 
+    // 设置了 TODODROP_KEYSTORE 等环境变量（CI 里来自仓库 Secrets）就用正式签名，
+    // 否则沿用 debug 签名，本地直接 assembleRelease 也能装。
+    val releaseKeystore = System.getenv("TODODROP_KEYSTORE")
+        ?.takeIf { it.isNotBlank() }
+        ?.let { file(it) }
+        ?.takeIf { it.exists() }
+    signingConfigs {
+        if (releaseKeystore != null) {
+            create("release") {
+                storeFile = releaseKeystore
+                storePassword = System.getenv("TODODROP_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("TODODROP_KEY_ALIAS")
+                keyPassword = System.getenv("TODODROP_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName(if (releaseKeystore != null) "release" else "debug")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
