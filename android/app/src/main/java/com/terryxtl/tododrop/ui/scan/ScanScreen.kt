@@ -10,9 +10,10 @@ import android.net.Uri
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.camera.core.ImageAnalysis
+import android.util.Size as CameraSize
 import androidx.camera.core.TorchState
-import androidx.camera.mlkit.vision.MlKitAnalyzer
+import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
@@ -69,9 +70,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.google.mlkit.vision.barcode.BarcodeScannerOptions
-import com.google.mlkit.vision.barcode.BarcodeScanning
-import com.google.mlkit.vision.barcode.common.Barcode
 import com.terryxtl.tododrop.BuildConfig
 import com.terryxtl.tododrop.R
 import com.terryxtl.tododrop.transfer.QrParseResult
@@ -79,6 +77,7 @@ import com.terryxtl.tododrop.transfer.QrPayload
 import com.terryxtl.tododrop.ui.components.AppIcon
 import com.terryxtl.tododrop.ui.components.EmptyState
 import kotlinx.coroutines.launch
+import java.util.concurrent.Executors
 
 /** 扫到非本 App 的二维码时，提示的最短间隔。 */
 private const val HINT_INTERVAL_MS = 2_500L
@@ -228,38 +227,43 @@ private fun CameraScanner(
     var lastHintAt by remember { mutableLongStateOf(0L) }
 
     DisposableEffect(controller, lifecycleOwner) {
-        val executor = ContextCompat.getMainExecutor(context)
-        val scanner = BarcodeScanning.getClient(
-            BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_QR_CODE).build()
-        )
+        val mainExecutor = ContextCompat.getMainExecutor(context)
+        // ZXing 解码较耗时，放到单独的后台线程；结果切回主线程处理
+        val analysisExecutor = Executors.newSingleThreadExecutor()
+        // 二维码里有多个地址和证书指纹，点阵较密，分析分辨率取 720p 左右
+        controller.imageAnalysisResolutionSelector = ResolutionSelector.Builder()
+            .setResolutionStrategy(
+                ResolutionStrategy(CameraSize(1280, 720), ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER)
+            )
+            .build()
+        fun handle(raw: String) {
+            if (handled) return
+            val hint = when (val parsed = QrPayload.parse(raw)) {
+                is QrParseResult.Ok -> {
+                    handled = true
+                    // 识别到有效二维码后立即停止分析
+                    controller.clearImageAnalysisAnalyzer()
+                    haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                    currentOnScanned(raw)
+                    null
+                }
+                QrParseResult.NotTodoDrop -> msgNotOurs
+                QrParseResult.UnsupportedVersion -> msgUnsupported
+                is QrParseResult.Invalid ->
+                    context.getString(R.string.scan_invalid, context.getString(parsed.reason.messageRes))
+            }
+            val now = System.currentTimeMillis()
+            if (hint != null && now - lastHintAt > HINT_INTERVAL_MS) {
+                lastHintAt = now
+                scope.launch {
+                    snackbar.currentSnackbarData?.dismiss()
+                    snackbar.showSnackbar(hint)
+                }
+            }
+        }
         controller.setImageAnalysisAnalyzer(
-            executor,
-            MlKitAnalyzer(listOf(scanner), ImageAnalysis.COORDINATE_SYSTEM_ORIGINAL, executor) { result ->
-                if (handled) return@MlKitAnalyzer
-                val raw = result.getValue(scanner)?.firstNotNullOfOrNull { it.rawValue } ?: return@MlKitAnalyzer
-                val hint = when (val parsed = QrPayload.parse(raw)) {
-                    is QrParseResult.Ok -> {
-                        handled = true
-                        // 识别到有效二维码后立即停止分析
-                        controller.clearImageAnalysisAnalyzer()
-                        haptics.performHapticFeedback(HapticFeedbackType.Confirm)
-                        currentOnScanned(raw)
-                        null
-                    }
-                    QrParseResult.NotTodoDrop -> msgNotOurs
-                    QrParseResult.UnsupportedVersion -> msgUnsupported
-                    is QrParseResult.Invalid ->
-                        context.getString(R.string.scan_invalid, context.getString(parsed.reason.messageRes))
-                }
-                val now = System.currentTimeMillis()
-                if (hint != null && now - lastHintAt > HINT_INTERVAL_MS) {
-                    lastHintAt = now
-                    scope.launch {
-                        snackbar.currentSnackbarData?.dismiss()
-                        snackbar.showSnackbar(hint)
-                    }
-                }
-            },
+            analysisExecutor,
+            QrCodeAnalyzer { raw -> mainExecutor.execute { handle(raw) } },
         )
 
         // 相机连上后 torchState 会先发一次当前状态，这时把保存的手电筒状态重新应用一次
@@ -282,9 +286,11 @@ private fun CameraScanner(
         controller.bindToLifecycle(lifecycleOwner)
         onDispose {
             controller.torchState.removeObserver(torchObserver)
+            // 后台线程可能还有一帧正在解码，离开页面后不再处理它的结果
+            handled = true
             controller.clearImageAnalysisAnalyzer()
             controller.unbind()
-            scanner.close()
+            analysisExecutor.shutdown()
         }
     }
 

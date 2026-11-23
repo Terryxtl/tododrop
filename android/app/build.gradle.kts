@@ -99,8 +99,7 @@ dependencies {
     implementation(libs.camerax.camera2)
     implementation(libs.camerax.lifecycle)
     implementation(libs.camerax.view)
-    implementation(libs.camerax.mlkit.vision)
-    implementation(libs.mlkit.barcode.scanning)
+    implementation(libs.zxing.core)
 
     implementation(libs.okhttp)
     implementation(libs.reorderable)
