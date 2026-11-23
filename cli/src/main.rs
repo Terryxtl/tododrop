@@ -204,13 +204,7 @@ fn run_serve(args: ServeArgs, term: Term) -> Result<()> {
         println!("  {}", term.dim(&url));
         println!();
     }
-    println!("  在「待办投递」App 里：导出 → 选择待办 → 扫码发送，扫描上方二维码");
-    if args.once {
-        println!("  {}", term.dim("收到一次后自动退出（--once）"));
-    } else {
-        println!("  {}", term.dim("可以多次发送，按 Ctrl+C 退出"));
-    }
-    println!("  {}", term.dim("提示：第一次运行如果弹出 Windows 防火墙窗口，请勾选允许“专用网络”访问"));
+    println!("  {}", term.dim(if args.once { "用 App 扫码发送，收到一次后退出" } else { "用 App 扫码发送，Ctrl+C 退出" }));
     println!();
 
     // ---- 启动服务 ----

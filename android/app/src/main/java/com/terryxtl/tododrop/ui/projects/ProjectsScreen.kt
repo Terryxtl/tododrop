@@ -721,31 +721,33 @@ private fun ProjectHeader(
                     ),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
+                    // 清单全部完成：徽章和状态文字改用第三色，和进行中的项目区分
+                    val allDone = row.openCount == 0 && row.doneCount > 0
                     if (isRoot) {
                         ShapeBadge(
                             shape = badgeShapeFor(row.project.id),
-                            container = colors.primaryContainer,
+                            container = if (allDone) colors.tertiaryContainer else colors.primaryContainer,
                             size = 44.dp,
                         ) {
                             Text(
                                 row.project.name.trim().take(1),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
-                                color = colors.onPrimaryContainer,
+                                color = if (allDone) colors.onTertiaryContainer else colors.onPrimaryContainer,
                             )
                         }
                     } else {
                         // 子项目：小号徽章，用次要色和顶层项目区分
                         ShapeBadge(
                             shape = badgeShapeFor(row.project.id),
-                            container = colors.secondaryContainer,
+                            container = if (allDone) colors.tertiaryContainer else colors.secondaryContainer,
                             size = 32.dp,
                         ) {
                             Text(
                                 row.project.name.trim().take(1),
                                 style = MaterialTheme.typography.labelLarge,
                                 fontWeight = FontWeight.Bold,
-                                color = colors.onSecondaryContainer,
+                                color = if (allDone) colors.onTertiaryContainer else colors.onSecondaryContainer,
                             )
                         }
                     }
@@ -764,7 +766,11 @@ private fun ProjectHeader(
                         Text(
                             if (row.childCount > 0) stringResource(R.string.project_children_suffix, status, row.childCount) else status,
                             style = if (isRoot) MaterialTheme.typography.bodyMedium else MaterialTheme.typography.bodySmall,
-                            color = if (row.openCount > 0) colors.primary else colors.onSurfaceVariant,
+                            color = when {
+                                row.openCount > 0 -> colors.primary
+                                allDone -> colors.tertiary
+                                else -> colors.onSurfaceVariant
+                            },
                         )
                     }
                     AppIcon(R.drawable.ic_expand_more, null, Modifier.rotate(rotation), tint = colors.onSurfaceVariant)
