@@ -83,9 +83,9 @@ jobs:
           pkg="tododrop-${TAG}-${NAME}"
           bindir="cli/target/${TARGET}/release"
           if [[ "$TARGET" == *windows* ]]; then
-            (cd "$bindir" && 7z a "$GITHUB_WORKSPACE/dist/${pkg}.zip" tododrop.exe)
+            (cd "$bindir" && 7z a "$GITHUB_WORKSPACE/dist/${pkg}.zip" tdd.exe)
           else
-            tar -C "$bindir" -czf "dist/${pkg}.tar.gz" tododrop
+            tar -C "$bindir" -czf "dist/${pkg}.tar.gz" tdd
           fi
           ls -l dist
 

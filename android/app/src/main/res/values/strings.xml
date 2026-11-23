@@ -78,7 +78,7 @@
 
     <!-- 扫码 -->
     <string name="scan_title">扫描二维码</string>
-    <string name="scan_hint">在电脑上运行 tododrop，对准终端里的二维码</string>
+    <string name="scan_hint">在电脑上运行 tdd，对准终端里的二维码</string>
     <string name="scan_not_tododrop">这不是「待办投递」的二维码</string>
     <string name="scan_unsupported">二维码版本不受支持，请把 App 和电脑端升级到同一版本</string>
     <string name="scan_invalid">二维码内容不完整：%1$s</string>
@@ -100,11 +100,11 @@
     <string name="send_done">完成</string>
     <string name="send_rescan">重新扫码</string>
     <string name="send_err_unreachable_title">连接不上电脑</string>
-    <string name="send_err_unreachable_body">请确认：\n• 手机和电脑连着同一个局域网（同一个 Wi-Fi）\n• 电脑上的 tododrop 仍在运行\n• Windows 防火墙已允许 tododrop 访问“专用网络”</string>
+    <string name="send_err_unreachable_body">请确认：\n• 手机和电脑连着同一个局域网（同一个 Wi-Fi）\n• 电脑上的 tdd 仍在运行\n• Windows 防火墙已允许 tdd 访问“专用网络”</string>
     <string name="send_err_fingerprint_title">证书指纹不匹配</string>
-    <string name="send_err_fingerprint_body">连接到的设备不是二维码对应的那台电脑，或者 tododrop 已经重启。请重新扫码。</string>
+    <string name="send_err_fingerprint_body">连接到的设备不是二维码对应的那台电脑，或者 tdd 已经重启。请重新扫码。</string>
     <string name="send_err_unauthorized_title">二维码已失效</string>
-    <string name="send_err_unauthorized_body">tododrop 可能已经重启，请扫描终端里最新的二维码。</string>
+    <string name="send_err_unauthorized_body">tdd 可能已经重启，请扫描终端里最新的二维码。</string>
     <string name="send_err_rejected_title">电脑端没有保存</string>
     <string name="send_err_failed_title">发送失败</string>
     <string name="send_err_nothing_title">没有可发送的待办</string>
@@ -148,7 +148,7 @@
     <string name="qr_invalid_token">token 无效</string>
     <string name="qr_invalid_fingerprint">证书指纹无效</string>
     <string name="send_err_not_tododrop_title">对方不是 tododrop</string>
-    <string name="send_err_not_tododrop_body">连上的地址上运行的不是 tododrop 电脑端。请确认扫描的是 tododrop 终端里显示的二维码。</string>
+    <string name="send_err_not_tododrop_body">连上的地址上运行的不是 tododrop 电脑端。请确认扫描的是 tdd 终端里显示的二维码。</string>
     <string name="send_err_protocol_title">版本不兼容</string>
     <string name="send_err_protocol_body">电脑端的协议版本是 %1$d，App 使用的是 %2$d。请把 App 和电脑端升级到同一版本。</string>
     <string name="send_err_timeout_title">电脑端没有及时回应</string>

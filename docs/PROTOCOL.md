@@ -1,6 +1,6 @@
 # TodoDrop 传输协议 v2
 
-手机端（待办投递 App）把选中的未完成待办按项目树发给 PC 端 CLI（`tododrop`），只传原始数据；
+手机端（待办投递 App）把选中的未完成待办按项目树发给 PC 端 CLI（命令 `tdd`），只传原始数据；
 CLI 负责包装成 Markdown，每个顶层项目保存为一个 `TODOS_<项目名>_yyyyMMdd_HHmmss.md`。
 
 > 版本说明：协议 v1 由手机生成 Markdown、CLI 原样保存为一个文件；v2 改为只传原始数据。

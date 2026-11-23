@@ -14,10 +14,10 @@ use tododrop::{DEFAULT_PORT, config, net, qr, server};
 
 #[derive(Parser)]
 #[command(
-    name = "tododrop",
+    name = "tdd",
     version,
     about = "待办投递 PC 接收端：在局域网内接收手机导出的待办 Markdown",
-    after_help = "示例：\n  tododrop                       启动接收，保存到默认目录或当前目录\n  tododrop -o D:\\Notes           保存到指定目录\n  tododrop config --dir D:\\Notes  设置默认保存目录",
+    after_help = "示例：\n  tdd                       启动接收，保存到默认目录或当前目录\n  tdd -o D:\\Notes           保存到指定目录\n  tdd config --dir D:\\Notes  设置默认保存目录",
     args_conflicts_with_subcommands = true
 )]
 struct Cli {

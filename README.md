@@ -3,7 +3,7 @@
 一个按「项目」分类的 Android 待办备忘录，外加一个 PC 端命令行接收器。
 
 - **Android App「待办投递」**：待办按项目归类，项目下可以再建子项目（最多 3 层），每条只有正文（可多行）。除了普通待办，还可以记「提醒」——只给人看，不写进导出的文件。可以跨项目勾选未完成的待办，扫描 PC 终端上的二维码，通过局域网发到电脑上；发送成功后这些待办自动标为已完成。
-- **PC CLI `tododrop`**：用 Rust 写的单文件程序。启动后在局域网内开一个 HTTPS 服务器，在终端里画出二维码；手机扫码后把原始数据发过来，CLI 包装成 Markdown，每个顶层项目保存为一个 `TODOS_<项目名>_yyyyMMdd_HHmmss.md`，提醒则直接显示在终端里。
+- **PC CLI `tdd`**：用 Rust 写的单文件程序。启动后在局域网内开一个 HTTPS 服务器，在终端里画出二维码；手机扫码后把原始数据发过来，CLI 包装成 Markdown，每个顶层项目保存为一个 `TODOS_<项目名>_yyyyMMdd_HHmmss.md`，提醒则直接显示在终端里。
 
 传输方式参考 [LocalSend](https://localsend.org/)：HTTPS、自签证书、手机端校验证书指纹。区别是用扫码代替了组播发现，扫码本身就是授权，电脑端不需要再点确认。
 
@@ -42,7 +42,7 @@ TODO/
 | `TodoDrop-vX.Y.Z-arm64.apk` | Android App（arm64-v8a，Android 9+） |
 | `tododrop-vX.Y.Z-windows-x64.zip` | Windows CLI |
 | `tododrop-vX.Y.Z-linux-x64.tar.gz` / `linux-arm64` | Linux CLI（musl 静态链接，不依赖 glibc 版本） |
-| `tododrop-vX.Y.Z-macos-arm64.tar.gz` / `macos-x64` | macOS CLI（未签名，首次运行需在「隐私与安全性」里允许，或执行 `xattr -d com.apple.quarantine tododrop`） |
+| `tododrop-vX.Y.Z-macos-arm64.tar.gz` / `macos-x64` | macOS CLI（未签名，首次运行需在「隐私与安全性」里允许，或执行 `xattr -d com.apple.quarantine tdd`） |
 | `SHA256SUMS.txt` | 校验和 |
 
 ## PC 端 CLI
@@ -56,7 +56,7 @@ cd cli
 cargo build --release
 ```
 
-产物在 `cli/target/release/tododrop.exe`（其他系统上没有 `.exe` 后缀）。可以把它复制到 `PATH` 里的任意目录。
+产物在 `cli/target/release/tdd.exe`（其他系统上没有 `.exe` 后缀）。可以把它复制到 `PATH` 里的任意目录。
 
 运行测试：
 
@@ -69,9 +69,9 @@ cargo test
 直接运行就会启动接收：
 
 ```bash
-tododrop                  # 保存到默认目录；没设默认目录就保存到当前目录
-tododrop -o D:\Notes      # 保存到指定目录
-tododrop --once           # 收到一次后自动退出
+tdd                       # 保存到默认目录；没设默认目录就保存到当前目录
+tdd -o D:\Notes           # 保存到指定目录
+tdd --once                # 收到一次后自动退出
 ```
 
 终端会显示版本、保存目录（及其来源）、电脑名称、监听地址、证书短指纹和二维码。用手机 App 扫码即可发送。默认可以连续接收多次，按 `Ctrl+C` 退出。
@@ -109,9 +109,9 @@ tododrop --once           # 收到一次后自动退出
 #### 配置默认保存目录
 
 ```bash
-tododrop config --dir D:\Notes   # 设置默认保存目录（会转成绝对路径，目录不存在时自动创建）
-tododrop config --show           # 查看当前配置（不带参数时也是这个行为）
-tododrop config --reset          # 清除默认保存目录
+tdd config --dir D:\Notes        # 设置默认保存目录（会转成绝对路径，目录不存在时自动创建）
+tdd config --show                # 查看当前配置（不带参数时也是这个行为）
+tdd config --reset               # 清除默认保存目录
 ```
 
 配置文件位置：
@@ -148,7 +148,7 @@ default_dir = 'D:\Notes'
 
 #### Windows 防火墙
 
-第一次运行时 Windows 可能会弹出防火墙窗口，请勾选允许 **「专用网络」** 访问。如果当时点了取消，手机会连不上，可以到「Windows 安全中心 → 防火墙和网络保护 → 允许应用通过防火墙」里给 `tododrop.exe` 勾上专用网络。另外请确认当前网络在 Windows 里被设成了「专用网络」，而不是「公用网络」。
+第一次运行时 Windows 可能会弹出防火墙窗口，请勾选允许 **「专用网络」** 访问。如果当时点了取消，手机会连不上，可以到「Windows 安全中心 → 防火墙和网络保护 → 允许应用通过防火墙」里给 `tdd.exe` 勾上专用网络。另外请确认当前网络在 Windows 里被设成了「专用网络」，而不是「公用网络」。
 
 ## Android App
 
@@ -183,7 +183,7 @@ Windows 的 cmd / PowerShell 里用 `gradlew.bat :app:assembleRelease`。
 
 ## 使用流程
 
-1. 在电脑上运行 `tododrop`，终端里出现二维码。
+1. 在电脑上运行 `tdd`，终端里出现二维码。
 2. 手机和电脑连同一个局域网（同一个 Wi-Fi，或同在 ZeroTier / Tailscale 等虚拟局域网里）。
 3. 在 App 里导出：
    - **快速导出**：在首页把项目卡片**从左往右滑**，直接打开相机，扫码发送这个项目（含子项目）的全部未完成待办。
